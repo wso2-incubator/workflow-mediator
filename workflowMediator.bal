@@ -20,8 +20,8 @@ public type WorkflowRequestParamter record {
 
 # Description
 #
-# + requestId - Request Idenitifier and this use for callback function  
-# + workflowId - External workflow Identifier   
+# + requestID - Request Idenitifier and this use for callback function  
+# + workflowID - External workflow Identifier   
 # + workflowVariable - List of varibles which recived from the request
 public type WorkflowRequest record {
     string requestID;

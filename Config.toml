@@ -1,0 +1,13 @@
+#Provide the workflow engine configuration details here
+
+#engine_type = Exetrnal workflow engine type
+#engine_url  = External workflow engine url 
+[workflow_engine_config]
+engine_type = "camunda"
+engine_url = "http://localhost:8080/engine-rest/process-definition"
+
+#callback_url = Callback url for the identity server to call back after the workflow completion
+[callback]
+callback_url = "http://localhost:9763/api/server/v1/workflow/"
+
+

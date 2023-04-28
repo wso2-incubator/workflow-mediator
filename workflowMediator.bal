@@ -3,7 +3,7 @@ import ballerina/mime;
 
 //callback record
 
-type CallbackCamunda record {
+type CallbackPayload record {
     string requestID;
     string status;
 
@@ -20,13 +20,13 @@ public type WorkflowRequestParamter record {
 
 # Description
 #
-# + request_id - Request Idenitifier and this use for callback function  
-# + workflow_id - External workflow Identifier   
-# + workflow_parameters - List of varibles which recived from the request
+# + requestId - Request Idenitifier and this use for callback function  
+# + workflowId - External workflow Identifier   
+# + workflowVariable - List of varibles which recived from the request
 public type WorkflowRequest record {
-    string request_id;
-    string workflow_id;
-    WorkflowRequestParamter[] workflow_parameters;
+    string requestID;
+    string workflowID;
+    WorkflowRequestParamter[] workflowVariable;
 };
 type WorkflowEngineType record {
    string TYPE;
@@ -44,25 +44,25 @@ service / on new http:Listener(8090) {
             WorkflowEngine workflowEngine = check createWorkflowEngine(workflow_engine_config.engine_type);
              error? workflowInitializer = workflowEngine.workflowInitializer(workflowRequestType);
              if workflowInitializer is error {
-
+                return workflowInitializer;
              }
+             check caller->respond(200);
              
-       
-
     }
 
     resource function post Callback(http:Caller caller, http:Request request) returns error? {
+
         http:Client CallbackIS = check new (callback.callback_url);
 
         json callbackPayload = check request.getJsonPayload();
-        CallbackCamunda inputRecord = check callbackPayload.cloneWithType(CallbackCamunda);
-        string requestID = inputRecord.requestID;
-        json payload = {
-            "status": inputRecord.status
+        CallbackPayload callbackpayload = check callbackPayload.cloneWithType(CallbackPayload);
+        string requestID = callbackpayload.requestID;
+        json ISCallbackPayload = {
+            "status": callbackpayload.status
         };
 
         map<string> headers = {"Content-Type": mime:APPLICATION_JSON};
-        http:Response res = check CallbackIS->patch(requestID, payload, headers);
+        http:Response res = check CallbackIS->patch(requestID, ISCallbackPayload, headers);
 
         check caller->respond(res.statusCode);
 

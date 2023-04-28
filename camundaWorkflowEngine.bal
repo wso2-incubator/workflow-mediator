@@ -1,6 +1,7 @@
 
 import ballerina/http;
-import ballerina/io;
+
+
 
 //Camunda Records
 
@@ -45,11 +46,12 @@ distinct service class CamundaWorkflowEngine {
     # + return - Return Value Description
     public function workflowInitializer(WorkflowRequest workflowRequestType) returns error?  {
        
-        string workflowDefinitionID = workflowRequestType.workflow_id;
+        string workflowDefinitionID = workflowRequestType.workflowID;
         http:Client clientCamunda = check new (self.engineURL);
         CamundaOutputType camundaPayload = check self.CamundaConvert(workflowRequestType);
-        io:println("Camunda Payload: ", camundaPayload);
+       
         http:Response _ = check clientCamunda->post("/" + workflowDefinitionID + "/start", camundaPayload, {});
+       
     
 
     }
@@ -60,7 +62,7 @@ distinct service class CamundaWorkflowEngine {
     #
     private isolated function CamundaConvert(WorkflowRequest workflowRequestType) returns error|CamundaOutputType {
 
-        string camundaWorkflowID = workflowRequestType.request_id;
+        string camundaWorkflowID = workflowRequestType.requestID;
 
         CamundaOutputType outputType = {
             variables: {}
@@ -68,7 +70,7 @@ distinct service class CamundaWorkflowEngine {
         outputType.variables["requestID"] = {
             value: camundaWorkflowID
         };
-        foreach CamundaInputTypeVariable inputVariable in workflowRequestType.workflow_parameters {
+        foreach CamundaInputTypeVariable inputVariable in workflowRequestType.workflowVariable {
           
                 outputType.variables[inputVariable.name] = {
                     value: inputVariable.value
